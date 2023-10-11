@@ -1,7 +1,6 @@
 #################################################################
 ##                            Setup                            ##
 #################################################################
-
 set.seed(2022)
 
 # loading packages
@@ -13,11 +12,11 @@ library(flextable)
 library(qgraph)
 
 # importing clean data for reliability analyses
-networkdata_reliability_sg <- read.csv("./data/networkdata_reliability_sg.csv")
+networkdata_reliability_sg <- read.csv("./data/exploratory/networkdata_reliability_sg.csv")
 
 # importing clean data for sample characteristics and network estimation
-data_sg <- read.csv("./data/networkdata_sg.csv")
-networkdata_sg <- read.csv("./data/networkdata_sg.csv") %>% 
+data_sg <- read.csv("./data/exploratory/networkdata_sg.csv")
+networkdata_sg <- read.csv("./data/exploratory/networkdata_sg.csv") %>% 
   select(-Age)
 
 # importing codebook
@@ -27,8 +26,7 @@ variables <- as.data.frame(readxl::read_xlsx("./data/variablebook.xlsx")) %>%
 #################################################################
 ##                         Reliability                         ##
 #################################################################
-
-#calculating reliability for docs subscales
+#calculating reliability for docs subscales (raw_alpha of output)
 
   ## docs_con
   networkdata_reliability_sg %>% 
@@ -50,7 +48,7 @@ variables <- as.data.frame(readxl::read_xlsx("./data/variablebook.xlsx")) %>%
     select(docs16, docs17, docs18, docs19, docs20) %>% 
     psych::alpha()
 
-#calculating reliability for tpess (raw_alpha)
+#calculating reliability for tpess (raw_alpha of output)
 networkdata_reliability_sg %>% 
   select(starts_with("tpess")) %>% 
   psych::alpha()
@@ -58,19 +56,18 @@ networkdata_reliability_sg %>%
 ##################################################################
 ##                    Sample characteristics                    ##
 ##################################################################
-
 # mean age
 mean(data_sg$Age, na.rm = TRUE) %>% 
   round(digits = 2)
 
 ##################################################################
-##                      Network estimation                      ##
+##                Exploratory network estimation                ##
 ##################################################################
-
 # defining node labels for graph
 nodelabels <- data.frame(variablename = colnames(networkdata_sg)) %>% 
   left_join(variables, by = "variablename") %>% 
   select(-variable_description_clean)
+# write.csv(nodelabels, file = "./data/nodelabels.csv", row.names = FALSE)
 
 # estimating network
 network_sg <- estimateNetwork(networkdata_sg,
@@ -100,11 +97,6 @@ group_subscale <- list("GAD" = def_legend(networkdata_sg,"gad"),
                        "DOCS" = def_legend(networkdata_sg,"docs"),
                        "TPESS" = c(which(colnames(networkdata_sg) == "tpess")))
 
-# defining node names for legend
-itemnames <- data.frame(variablename = colnames(networkdata_sg)) %>% 
-  left_join(variables, by = "variablename") %>%
-  select(variable_description_short)
-
 # printing plot
 plot_sg <- plot(network_sg,
      groups = group_subscale,
@@ -116,13 +108,20 @@ plot_sg <- plot(network_sg,
      label.cex = 1.5,
      border.width = 0.75,
      legend.cex = 0.95,
-     nodeNames = itemnames$variable_description_short,
-     filename = "study1_network", filetype = "jpeg", width = 20, height = 20)
+     nodeNames = nodelabels$variable_description_short,
+     filename = "study1_expnetwork", filetype = "jpeg", width = 20, height = 20)
+
+# extracting adjacency matrix from the exploratory network to be used in confirmatory network analysis
+adjmatrix <- 1*(network_sg$graph !=0)
+# write.csv(adjmatrix, file = "./data/confirmatory/adjmatrix.csv", row.names = TRUE)
+
+# extracting plot layout from the exploratory network to be used in confirmatory network analysis
+plotlayout <- plot_sg$layout
+# write.csv(plotlayout, file = "./data/confirmatory/plotlayout.csv", row.names = FALSE)
 
 ##################################################################
 ##                      Edge weight tables                      ##
 ##################################################################
-
 # Edge Weight Table (Full)
 edgeweight_full <- data.frame(network_sg$graph) %>%
   round(digits = 2)

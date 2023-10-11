@@ -2,6 +2,9 @@
 library(tidyverse)
 library(haven)
 
+#################################################################
+##                   Cleaning SG sample data                   ##
+#################################################################
 # importing singapore sample
 tpess_sg_data <- read_sav("./data/tpess_sg.sav")
 
@@ -23,7 +26,7 @@ variables$variablename[variables_tpessstart:variables_tpessend] <-c('rnt1', 'rnt
                                                                     'uee1', 'uee2', 'uee3', 'uee4')
 
 # subsetting TPESS subscales and symptom measures items
-cleandata <- tpess_sg_data %>%
+cleandata_sg <- tpess_sg_data %>%
   select(Age, starts_with("docs"), starts_with("gad"), starts_with("phq"), starts_with("smpd"), starts_with("smsp"), tpess) %>%
   select(-docs_sum, -gad_sum, -phq_sum, -smpd_mean, -smsp_mean) %>% 
   mutate(docs_con = docs1 + docs2 + docs3 + docs4 + docs5,
@@ -34,16 +37,49 @@ cleandata <- tpess_sg_data %>%
          .after = smsp10)
 
 # data for 57-node network (all symptom item data, no symptom subscale scores)
-cleandata_full <- tpess_sg_data %>%
+cleandata_sg_full <- tpess_sg_data %>%
   select(starts_with("gad"), starts_with("phq"), starts_with("smpd"), starts_with("smsp"), starts_with("docs"), tpess) %>%
   select(-docs_sum, -gad_sum, -phq_sum, -smpd_mean, -smsp_mean)
 
 # data for calculating reliability
-cleandata_reliability <- tpess_sg_data %>% 
+cleandata_sg_reliability <- tpess_sg_data %>% 
   select(starts_with("docs"), starts_with("tpess")) %>% 
   select(-docs_sum, -tpess)
 
 # saving cleaned data file
-cleandata %>% write.csv("./data/networkdata_sg.csv", row.names = FALSE)
-cleandata_full %>% write.csv("./data/networkdata_allitems_sg.csv", row.names = FALSE)
-cleandata_reliability %>% write.csv("./data/networkdata_reliability_sg.csv", row.names = FALSE)
+cleandata_sg %>% write.csv("./data/exploratory/networkdata_sg.csv", row.names = FALSE)
+cleandata_sg_full %>% write.csv("./data/exploratory/networkdata_allitems_sg.csv", row.names = FALSE)
+cleandata_sg_reliability %>% write.csv("./data/exploratory/networkdata_reliability_sg.csv", row.names = FALSE)
+
+#################################################################
+##                   Cleaning US sample data                   ##
+#################################################################
+# importing US sample
+tpess_us_data <- read_sav("./data/tpess_us.sav")
+
+# subsetting TPESS subscales and symptom measures items
+cleandata_us <- tpess_us_data %>%
+  select(Age, starts_with("docs"), starts_with("gad"), starts_with("phq"), starts_with("smpd"), starts_with("smsp"), tpess) %>%
+  select(-docs_sum, -gad_sum, -phq_sum, -smpd_mean, -smsp_mean) %>% 
+  mutate(docs_con = docs1 + docs2 + docs3 + docs4 + docs5,
+         docs_res = docs6 + docs7 + docs8 + docs9 + docs10,
+         docs_ut = docs11 + docs12 + docs13 + docs14 + docs15,
+         docs_sym = docs16 + docs17 + docs18 + docs19 + docs20,
+         .keep = "unused",
+         .after = smsp10)
+
+# data for 57-node network (all symptom item data, no symptom subscale scores)
+cleandata_us_full <- tpess_us_data %>%
+  select(starts_with("gad"), starts_with("phq"), starts_with("smpd"), starts_with("smsp"), starts_with("docs"), tpess) %>%
+  select(-docs_sum, -gad_sum, -phq_sum, -smpd_mean, -smsp_mean)
+
+# data for calculating reliability
+cleandata_us_reliability <- tpess_us_data %>% 
+  select(starts_with("docs"), starts_with("tpess")) %>% 
+  select(-docs_sum, -tpess)
+
+# saving cleaned data file
+cleandata_us %>% write.csv("./data/confirmatory/networkdata_us.csv", row.names = FALSE)
+cleandata_us_full %>% write.csv("./data/confirmatory/networkdata_allitems_us.csv", row.names = FALSE)
+cleandata_us_reliability %>% write.csv("./data/confirmatory/networkdata_reliability_us.csv", row.names = FALSE)
+
