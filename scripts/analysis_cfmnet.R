@@ -79,6 +79,10 @@ cfmnetwork <- ggm(covs = cor(networkdata_us, use = "pairwise.complete.obs", meth
                   omega = adjmatrix)
 results_cfmnetwork <- cfmnetwork %>% runmodel() #takes a long time!
 
+# obtaining model fit indices
+
+results_cfmnetwork %>% fit
+
 #################################################################
 ##                Plotting confirmatory network                ##
 #################################################################
@@ -108,7 +112,7 @@ nodelabels <- read.csv("./data/nodelabels.csv")
 plotlayout <- as.matrix(read.csv("./data/confirmatory/plotlayout.csv"))
 
 #plotting confirmatory network
-plot_us <- qgraph(getmatrix(results_cfmnetwork, "omega", threshold = TRUE, alpha = 0.01),
+plot_us <- qgraph(getmatrix(results_cfmnetwork, "omega", threshold = TRUE, alpha = 0.05),
                 groups = group_subscale,
                 layout = plotlayout,
                 cut = 0,
