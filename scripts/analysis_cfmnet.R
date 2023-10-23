@@ -80,8 +80,8 @@ cfmnetwork <- ggm(covs = cor(networkdata_us, use = "pairwise.complete.obs", meth
 results_cfmnetwork <- cfmnetwork %>% runmodel() #takes a long time!
 
 # obtaining model fit indices
-
-results_cfmnetwork %>% fit
+results_cfmnetwork %>% fit %>% 
+  filter(Measure == "df" |Measure == "chisq" | Measure == "rmsea" | Measure == "tli" | Measure == "cfi")
 
 #################################################################
 ##                Plotting confirmatory network                ##
