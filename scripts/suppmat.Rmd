@@ -184,7 +184,7 @@ ggplot(smsad, aes(x = response, y = variable_description_short)) +
 
 #nonparboot <- bootnet(network_sg, nBoots = 1000, nCores = 8)
 #saveRDS(nonparboot, file = "./rds/nonparboot.rds")
-nonparboot <- readRDS(file = "./data/exploratory/rds/nonparboot.rds")
+nonparboot <- readRDS(file = "../data/exploratory/rds/nonparboot.rds")
 ```
 
 ```{r, fig.dim = c(8, 10)}

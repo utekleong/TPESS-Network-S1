@@ -109,7 +109,7 @@ plot_sg <- plot(network_sg,
      border.width = 0.75,
      legend.cex = 0.95,
      nodeNames = nodelabels$variable_description_short,
-     filename = "study1_expnetwork", filetype = "jpeg", width = 20, height = 20)
+     filename = "expnetwork", filetype = "jpeg", width = 20, height = 20)
 
 # extracting adjacency matrix from the exploratory network to be used in confirmatory network analysis
 adjmatrix <- 1*(network_sg$graph !=0)
@@ -127,7 +127,7 @@ edgeweight_full <- data.frame(network_sg$graph) %>%
   round(digits = 2)
 row.names(edgeweight_full) <- nodelabels$label
 names(edgeweight_full) <- nodelabels$label
-# write.csv(edgeweight_full, file = "edgeweight.csv")
+#write.csv(edgeweight_full, file = "edgeweight.csv")
 
 # Edge Weight Table (TPESS-Symptoms only)
 edgeweight_tpess <- data.frame(network_sg$graph[,41]) %>%

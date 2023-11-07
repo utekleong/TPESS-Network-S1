@@ -123,5 +123,48 @@ plot_us <- qgraph(getmatrix(results_cfmnetwork, "omega", threshold = TRUE, alpha
                 border.width = 0.75,
                 legend.cex = 0.95,
                 nodeNames = nodelabels$variable_description_short,
-                filename = "study1_cfmnetwork", filetype = "jpeg", width = 20, height = 20,
+                filename = "cfmnetwork", filetype = "jpeg", width = 20, height = 20,
                 theme = "colorblind")
+
+##################################################################
+##                      Edge weight tables                      ##
+##################################################################
+
+# extracing significance values from CIplot
+cfmnetwork_ciplot <- CIplot(results_cfmnetwork, "omega")
+
+significance <- case_when(
+  cfmnetwork_ciplot$data$p < 0.0001 ~ "p < .0001",
+  cfmnetwork_ciplot$data$p < 0.001 ~ "p < .001",
+  cfmnetwork_ciplot$data$p < 0.01 ~ "p < .01",
+  cfmnetwork_ciplot$data$p < 0.05 ~ "p < .05",
+  cfmnetwork_ciplot$data$p > 0.05 ~ "p > .05"
+)
+
+# this chunk of code pulls the edgelist from ci plot and removes absent edges
+cfmnetwork_edgelist <- data.frame(edge = as.character(cfmnetwork_ciplot$data$edge),
+                                  weight = cfmnetwork_ciplot$data$est,
+                                  p = cfmnetwork_ciplot$data$p,
+                                  sig = significance) %>%
+  filter(edge %in% subset(cfmnetwork_ciplot$data$edge, grepl("tpess", cfmnetwork_ciplot$data$edge, fixed = TRUE))) %>%  #grep1 used to filter for tpess-relevant edges only (returns T/F), subset used to create list of tpess-x edgelist; %in% used to evaluate if edge is in the tpess-x edgelist (returns T/F)
+  filter(!is.na(weight) & !is.na(p))
+
+# this chunk of code subsets the edgelist to significant edges only
+cfmnetwork_edgelist_sig <- cfmnetwork_edgelist %>%
+  filter(sig != "p > .05")
+
+# creating a nice table for significant edges of confirmatory network
+cfmnetwork_edgelist_sig$edge <- c("gad2", "gad6", "phq1", "phq6", "smsp3", "docs_ut", "docs_sym")
+names(cfmnetwork_edgelist_sig) <- c("variablename", "weight", "p", "sig")
+cfmnetwork_edgelist_sig$weight <- round(cfmnetwork_edgelist_sig$weight, digits = 2)
+cfmnetwork_edgelist_sig <- left_join(cfmnetwork_edgelist_sig, nodelabels, by = "variablename") %>% 
+  select(label, variable_description_short, weight) %>% 
+  arrange(desc(weight))
+
+cfmnetwork_edgelist_sig_table <- cfmnetwork_edgelist_sig %>% 
+  flextable() %>% 
+  set_header_labels(label = "Node Label",
+                    variable_description_short = "Description",
+                    weight = "Edge Weight") %>% 
+  autofit()
+#print(cfmnetwork_edgelist_sig_table, preview = "docx")
