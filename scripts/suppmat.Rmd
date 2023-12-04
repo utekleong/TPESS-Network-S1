@@ -12,27 +12,37 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
 <!-- # loading packages -->
+
 ```{r}
 library(tidyverse)
 library(bootnet)
 library(kableExtra)
+library(haven)
+library(psych)
+library(qgraph)
+library(psychonetrics)
+
 ```
 
 <!-- # loading data labels -->
+
 ```{r}
 variables <- as.data.frame(readxl::read_xlsx("../data/variablebook.xlsx")) %>% 
   select("label", "variablename", "variable_description_short", "variable_description_clean")
 ```
 
 \newpage
+
 # Appendix 1: Preliminary fitting of 57-node network model
 
 <!-- # loading data -->
+
 ```{r}
 networkdata_allitems_sg <- read.csv("../data/exploratory/networkdata_allitems_sg.csv")
 ```
 
 ## Estimated network
+
 ```{r}
 # defining node labels for graph
 nodelabels_57 <- data.frame(variablename = colnames(networkdata_allitems_sg)) %>% 
@@ -82,7 +92,9 @@ plot_57 <- plot(network_57,
 ```
 
 \newpage
+
 ## Item content
+
 ```{r}
 data.frame(variablename = colnames(networkdata_allitems_sg)) %>% 
   left_join(variables, by = "variablename") %>% 
@@ -103,16 +115,19 @@ data.frame(variablename = colnames(networkdata_allitems_sg)) %>%
 ```
 
 \newpage
+
 # Appendix 2: Distribution of responses to PHQ-9, GAD-7, SMPD, and SMSAD items
 
 The size of the circles in each plot reflects the proportion of the sample that selected the corresponding item response.
 
 <!-- # importing data-->
+
 ```{r}
 networkdata_sg <- read.csv("../data/exploratory/networkdata_sg.csv")
 ```
 
 ## Patient Health Questionnaire-9 (PHQ-9)
+
 ```{r}
 phq <- networkdata_sg[which(colnames(networkdata_sg) == "phq1"):which(colnames(networkdata_sg) == "phq9")] %>% 
   pivot_longer(names_to = "item",
@@ -129,6 +144,7 @@ ggplot(phq, aes(x = response, y = variable_description_short)) +
 ```
 
 ## Generalized Anxiety Disorder-7 (GAD-7)
+
 ```{r}
 gad <- networkdata_sg[which(colnames(networkdata_sg) == "gad1"):which(colnames(networkdata_sg) == "gad7")] %>% 
   pivot_longer(names_to = "item",
@@ -145,6 +161,7 @@ ggplot(gad, aes(x = response, y = variable_description_short)) +
 ```
 
 ## Severity Measure for Panic Disorder-Adult (SMPD)
+
 ```{r}
 smpd <- networkdata_sg[which(colnames(networkdata_sg) == "smpd1"):which(colnames(networkdata_sg) == "smpd10")] %>% 
   pivot_longer(names_to = "item",
@@ -161,6 +178,7 @@ ggplot(smpd, aes(x = response, y = variable_description_short)) +
 ```
 
 ## Severity Measure for Social Anxiety Disorder-Adult (SMSAD)
+
 ```{r}
 smsad <- networkdata_sg[which(colnames(networkdata_sg) == "smsp1"):which(colnames(networkdata_sg) == "smsp10")] %>% 
   pivot_longer(names_to = "item",
@@ -177,13 +195,15 @@ ggplot(smsad, aes(x = response, y = variable_description_short)) +
 ```
 
 \newpage
+
 # Appendix 3: Robustness Analysis (Bootstrapped CIs for Edge Weights)
+
 ```{r}
 # generating non-parametric bootstraps samples of network_sg
 # computationally intensive; code below was saved to a .rds file, to be loaded with readRDS 
 
 #nonparboot <- bootnet(network_sg, nBoots = 1000, nCores = 8)
-#saveRDS(nonparboot, file = "./rds/nonparboot.rds")
+#saveRDS(nonparboot, file = "..data/exploratory/rds/nonparboot.rds")
 nonparboot <- readRDS(file = "../data/exploratory/rds/nonparboot.rds")
 ```
 
@@ -191,3 +211,144 @@ nonparboot <- readRDS(file = "../data/exploratory/rds/nonparboot.rds")
 #plotting bootstrapped CIs for edge weights
 plot(nonparboot, order = "sample", labels = FALSE, areaAlpha = 0.4)
 ```
+
+\newpage
+
+# Appendix 4: Confirmatory Network Analysis for US community Sample
+
+```{r}
+set.seed(2022)
+
+# importing clean data for reliability analyses
+networkdata_reliability_us <- read.csv("../data/confirmatory/networkdata_reliability_us.csv")
+
+# importing clean data for sample characteristics and network estimation
+data_us <- read.csv("../data/confirmatory/networkdata_us.csv")
+networkdata_us <- read.csv("../data/confirmatory/networkdata_us.csv") %>% 
+  select(-Age)
+
+# importing codebook
+variables <- as.data.frame(readxl::read_xlsx("../data/variablebook.xlsx")) %>% 
+  select("label", "variablename", "variable_description_short", "variable_description_clean")
+```
+
+## Methods
+
+### Participants and Procedure
+
+We used data gathered from a US community sample via Prolific (*n* = 595). After removing duplicate responses and data from participants who had failed attention checks, the final sample size used for the present analysis was 534. Of the 534 participants, 293 participants were male, 236 were female, and 5 preferred not to indicate their gender. Most participants were ethnically Caucasian (69.7%) -- the remaining participants were either African American (15.0%), Hispanic (3.4%), Asian (8.2%), or others/mixed (3.7%). The mean age of this sample was `r mean(data_us$Age, na.rm = TRUE) %>% round(digits = 2)`. Participants were tasked to complete a battery of self-report questionnaires online at their convenience and were reimbursed with cash for their participation.
+
+### Measures
+
+```{r}
+#calculating reliability for docs subscales (raw_alpha of output)
+
+#calculating reliability for tpess (raw_alpha of output)
+docs_tpess_reli <-networkdata_reliability_us %>%
+  select(starts_with("tpess")) %>% 
+  psych::alpha()
+
+## docs_con
+docs_con_reli <- networkdata_reliability_us %>% 
+  select(docs1, docs2, docs3, docs4, docs5) %>% 
+  psych::alpha()
+
+## docs_res
+docs_res_reli <- networkdata_reliability_us %>% 
+  select(docs6, docs7, docs8, docs9, docs10) %>% 
+  psych::alpha()
+
+## docs_ut
+docs_ut_reli <- networkdata_reliability_us %>% 
+  select(docs11, docs12, docs13, docs14, docs15) %>% 
+  psych::alpha()
+
+## docs_sym
+docs_sym_reli <- networkdata_reliability_us %>% 
+  select(docs16, docs17, docs18, docs19, docs20) %>% 
+  psych::alpha()
+```
+
+The same measures administered to the Singaporean student sample were administered to the US community sample. The internal consistency of the TPESS , DOCS contamination subscale, DOCS responsibility subscale, DOCS unacceptable thoughts subscale, and DOCS symmetry subscale in the US sample was $\alpha$ = `r round(docs_tpess_reli$total$raw_alpha, digits = 2)`, $\alpha$ = `r round(docs_con_reli$total$raw_alpha, digits = 2)`, $\alpha$ = `r round(docs_res_reli$total$raw_alpha, digits = 2)`, $\alpha$ = `r round(docs_ut_reli$total$raw_alpha, digits = 2)`, and $\alpha$ = `r round(docs_sym_reli$total$raw_alpha, digits = 2)` respectively.
+
+### Data Analysis
+
+We estimated a confirmatory network model with the R package *psychonetrics* (version 0.11.5; Epskamp, 2023), fixing the structure of this model to that of the exploratory network detailed in the main paper (indicated by the adjacency matrix, which captures the presence/absence of edges between nodes in the exploratory network) but allowing network parameters to be freely estimated based on the US community sample data. This confirmatory model was based on Spearman correlations with pairwise estimation -- a Spearman correlation matrix (which encoded the Spearman correlations between the same 41 nodes used in the exploratory network model) and average pairwise sample size was used as input. The fit of this confirmatory model was evaluated with the following fit indices [(Schermelleh-Engel et al., 2003)](https://psycnet.apa.org/record/2003-08119-003): root mean square of approximation (RMSEA; $\leq$ 0.05 = good fit, 0.05 to 0.08 = adequate fit, 0.08 to 0.10 = mediocre fit, and > 0.10 = unacceptable), Tucker-Lewis index (TLI), and comparative fit index (CFI; TLI and CFI: > 0.97 = good fit and 0.95 to 0.97 = acceptable fit). The plot of this confirmatory network model was thresholded (using an alpha value of .05), such that only statistically significant edges (*p* < .05) were visually presented. We also imposed the structural layout (i.e. visual position of the nodes within a network) of the exploratory network model onto the confirmatory network model plot, so that the visual position of nodes in both plots were the same.
+
+## Results
+
+```{r, results = 'hide'}
+# pulling adjacency matrix from exploratory network
+adjmatrix <- as.matrix(read.csv("../data/confirmatory/adjmatrix.csv", row.names = 1))
+
+# obtaining average pairwise sample size for US sample
+noNA <- !is.na(networkdata_us)
+noNAmat <- t(noNA) %*% noNA
+n_pairwise <- mean(noNAmat[lower.tri(noNAmat)])
+
+# fitting confirmatory network model with psychonetrics
+# since exploratory model used spearman, should use spearman in confirmatory model for consistency (supply covs and nobs arguments instead of data)
+# computationally intensive; code below was saved to a .rds file, to be loaded with readRDS 
+cfmnetwork <- ggm(covs = cor(networkdata_us, use = "pairwise.complete.obs", method = "spearman"),
+                  nobs = n_pairwise,
+                  omega = adjmatrix)
+#results_cfmnetwork <- cfmnetwork %>% runmodel()
+#saveRDS(results_cfmnetwork, file = "../data/confirmatory/rds/results_cfmnetwork.rds")
+results_cfmnetwork <- readRDS(file = "../data/confirmatory/rds/results_cfmnetwork.rds")
+
+# obtaining model fit indices
+fit_cfmnetwork <- results_cfmnetwork %>% fit %>% 
+  filter(Measure == "df" |Measure == "chisq" | Measure == "rmsea" | Measure == "tli" | Measure == "cfi")
+fit_cfmnetwork$Value <- round(fit_cfmnetwork$Value, digits = 2)
+```
+
+```{r}
+# custom function for defining legend vectors
+# DO NOT use if there is only one element
+# var_start argument should be argument for dplyr::starts_with
+def_legend <- function(data, var_start){
+  
+  data %>% 
+    select(starts_with(var_start)) %>% 
+    colnames() %>%  
+    match(colnames(data))
+}
+
+# defining grouping for legend
+group_subscale <- list("GAD" = def_legend(networkdata_us,"gad"),
+                       "PHQ-9" = def_legend(networkdata_us,"phq"),
+                       "SMPD" = def_legend(networkdata_us,"smpd"),
+                       "SMSAD" = def_legend(networkdata_us,"smsp"),
+                       "DOCS" = def_legend(networkdata_us,"docs"),
+                       "TPESS" = c(which(colnames(networkdata_us) == "tpess")))
+
+# importing nodelabels
+nodelabels <- read.csv("../data/nodelabels.csv")
+
+# pulling plot layout of exploratory network
+plotlayout <- as.matrix(read.csv("../data/confirmatory/plotlayout.csv"))
+```
+
+```{r,fig.height = 40, fig.width = 1.4*40}
+#plotting confirmatory network
+plot_us <- qgraph(getmatrix(results_cfmnetwork, "omega", threshold = TRUE, alpha = 0.05),
+                groups = group_subscale,
+                layout = plotlayout,
+                cut = 0,
+                palette = "pastel",
+                vsize = 3,
+                labels = nodelabels$label,
+                label.cex = 1.5,
+                border.width = 0.75,
+                legend.cex = 1.85,
+                nodeNames = nodelabels$variable_description_short,
+                #filename = "cfmnetwork", filetype = "jpeg", width = 20, height = 20,
+                theme = "colorblind")
+```
+
+The figure above depicts the confirmatory network model fit to data from the US community
+sample. The confirmatory model -- $\chi^{2}$(`r (fit_cfmnetwork %>% filter(Measure == "df"))$Value`) = `r (fit_cfmnetwork %>% filter(Measure == "chisq"))$Value`, *p* < .001; RMSEA = `r (fit_cfmnetwork %>% filter(Measure == "rmsea"))$Value`; TLI = `r (fit_cfmnetwork %>% filter(Measure == "tli"))$Value`; CFI = `r (fit_cfmnetwork %>% filter(Measure == "cfi"))$Value` -- fit the data excellently. This indicates that the general network structure of associations between the core vulnerability and internalizing symptoms extracted from the Singaporean student sample in our exploratory analysis was replicated in the US community sample. Simulations (see next section) suggest that the US community sample was sufficiently large for this replication and that the significant negative edges in the confirmatory model were expected given that the network structure (that was imposed on the US community sample data) was extracted from an exploratory model estimated using graphical LASSO estimation.
+
+## Simulations
+
+To discuss with Sacha.

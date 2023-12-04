@@ -3,5 +3,5 @@ This repository contains the files for the study titled "Transdiagnostic Associa
 
 Under ./scripts you will find the R codes used to wrangle and analyse the data:
 - ./scripts/datacleaning.R contains the code used to prepare the raw data for analysis. As the identified raw data will not be provided here, this file is not executable. It, however, should give the reader a sense of what was done to the original data file.
-- ./scripts/expnet.R and ./scripts/cfmnet.R contains the executable code to perform the exploratory and confirmatory analyses conducted here (respectively).
-- ./scripts/suppmat.Rmd contains the executable code to generate the supplementary material.
+- ./scripts/expnet.R contains the executable code to perform the study's main analysis.
+- ./scripts/suppmat.Rmd contains the executable code to generate the supplementary material. Please check out ./scripts/cfmnet.R for an easier-to-read version of the confirmatory network analysis code.

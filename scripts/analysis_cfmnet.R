@@ -153,7 +153,7 @@ cfmnetwork_edgelist <- data.frame(edge = as.character(cfmnetwork_ciplot$data$edg
 cfmnetwork_edgelist_sig <- cfmnetwork_edgelist %>%
   filter(sig != "p > .05")
 
-# creating a nice table for significant edges of confirmatory network
+# creating a nice table for significant edges of confirmatory network (Table 2)
 cfmnetwork_edgelist_sig$edge <- c("gad2", "gad6", "phq1", "phq6", "smsp3", "docs_ut", "docs_sym")
 names(cfmnetwork_edgelist_sig) <- c("variablename", "weight", "p", "sig")
 cfmnetwork_edgelist_sig$weight <- round(cfmnetwork_edgelist_sig$weight, digits = 2)
