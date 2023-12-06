@@ -329,7 +329,7 @@ nodelabels <- read.csv("../data/nodelabels.csv")
 plotlayout <- as.matrix(read.csv("../data/confirmatory/plotlayout.csv"))
 ```
 
-```{r,fig.height = 40, fig.width = 1.4*40}
+```{r,fig.height = 30, fig.width = 1.4*30}
 #plotting confirmatory network
 plot_us <- qgraph(getmatrix(results_cfmnetwork, "omega", threshold = TRUE, alpha = 0.05),
                 groups = group_subscale,
@@ -340,14 +340,59 @@ plot_us <- qgraph(getmatrix(results_cfmnetwork, "omega", threshold = TRUE, alpha
                 labels = nodelabels$label,
                 label.cex = 1.5,
                 border.width = 0.75,
-                legend.cex = 1.85,
+                legend.cex = 1.42,
                 nodeNames = nodelabels$variable_description_short,
                 #filename = "cfmnetwork", filetype = "jpeg", width = 20, height = 20,
                 theme = "colorblind")
 ```
 
 The figure above depicts the confirmatory network model fit to data from the US community
-sample. The confirmatory model -- $\chi^{2}$(`r (fit_cfmnetwork %>% filter(Measure == "df"))$Value`) = `r (fit_cfmnetwork %>% filter(Measure == "chisq"))$Value`, *p* < .001; RMSEA = `r (fit_cfmnetwork %>% filter(Measure == "rmsea"))$Value`; TLI = `r (fit_cfmnetwork %>% filter(Measure == "tli"))$Value`; CFI = `r (fit_cfmnetwork %>% filter(Measure == "cfi"))$Value` -- fit the data excellently. This indicates that the general network structure of associations between the core vulnerability and internalizing symptoms extracted from the Singaporean student sample in our exploratory analysis was replicated in the US community sample. Simulations (see next section) suggest that the US community sample was sufficiently large for this replication and that the significant negative edges in the confirmatory model were expected given that the network structure (that was imposed on the US community sample data) was extracted from an exploratory model estimated using graphical LASSO estimation.
+sample. The confirmatory model -- $\chi^{2}$(`r (fit_cfmnetwork %>% filter(Measure == "df"))$Value`) = `r (fit_cfmnetwork %>% filter(Measure == "chisq"))$Value`, *p* < .001; RMSEA = `r (fit_cfmnetwork %>% filter(Measure == "rmsea"))$Value`; TLI = `r (fit_cfmnetwork %>% filter(Measure == "tli"))$Value`; CFI = `r (fit_cfmnetwork %>% filter(Measure == "cfi"))$Value` -- fit the data excellently. This indicates that the general network structure of associations between the core vulnerability and internalizing symptoms extracted from the Singaporean student sample in our exploratory analysis was replicated in the US community sample. Simulations (see next section) suggest that the US community sample was sufficiently large for this replication and that the significant negative edges in the confirmatory model were expected given that the network structure (that was imposed on the US community sample data) was extracted from an exploratory model estimated using graphical LASSO estimation. The symptoms with statistically significant edges with the core vulnerability are presented in the table below.
+
+```{r, fig.show = 'hide'}
+# extracing significance values from CIplot
+cfmnetwork_ciplot <- CIplot(results_cfmnetwork, "omega")
+
+significance <- case_when(
+  cfmnetwork_ciplot$data$p < 0.0001 ~ "p < .0001",
+  cfmnetwork_ciplot$data$p < 0.001 ~ "p < .001",
+  cfmnetwork_ciplot$data$p < 0.01 ~ "p < .01",
+  cfmnetwork_ciplot$data$p < 0.05 ~ "p < .05",
+  cfmnetwork_ciplot$data$p > 0.05 ~ "p > .05"
+)
+
+# this chunk of code pulls the edgelist from ci plot and removes absent edges
+cfmnetwork_edgelist <- data.frame(edge = as.character(cfmnetwork_ciplot$data$edge),
+                                  weight = cfmnetwork_ciplot$data$est,
+                                  p = cfmnetwork_ciplot$data$p,
+                                  sig = significance) %>%
+  filter(edge %in% subset(cfmnetwork_ciplot$data$edge, grepl("tpess", cfmnetwork_ciplot$data$edge, fixed = TRUE))) %>%  #grep1 used to filter for tpess-relevant edges only (returns T/F), subset used to create list of tpess-x edgelist; %in% used to evaluate if edge is in the tpess-x edgelist (returns T/F)
+  filter(!is.na(weight) & !is.na(p))
+
+# this chunk of code subsets the edgelist to significant edges only
+cfmnetwork_edgelist_sig <- cfmnetwork_edgelist %>%
+  filter(sig != "p > .05")
+
+# creating a nice table for significant edges of confirmatory network
+cfmnetwork_edgelist_sig$edge <- c("gad2", "gad6", "phq1", "phq6", "smsp3", "docs_ut", "docs_sym")
+names(cfmnetwork_edgelist_sig) <- c("variablename", "weight", "p", "sig")
+cfmnetwork_edgelist_sig$weight <- round(cfmnetwork_edgelist_sig$weight, digits = 2)
+cfmnetwork_edgelist_sig <- left_join(cfmnetwork_edgelist_sig, nodelabels, by = "variablename") %>% 
+  select(label, variable_description_short, weight) %>% 
+  arrange(desc(weight))
+```
+
+\newpage
+
+```{r}
+cfmnetwork_edgelist_sig %>%
+  kbl(format = "latex", col.names = c("Node Label", "Description", "Edge Weight"), caption = "Confirmatory Network: Weights of Edges between the Core Vulnerability and Internalizing Symptoms", booktabs = TRUE, longtable = TRUE)  %>%
+  footnote(
+    general_title = "Note.",
+    general = "All edges included in this are significant at p < .05. Values in the edge weight column indicate the partial spearman correlation between the core vulnerability node and the corresponding symptom node.",
+    threeparttable = TRUE,
+    footnote_as_chunk = TRUE)
+```
 
 ## Simulations
 
