@@ -74,10 +74,13 @@ n_pairwise <- mean(noNAmat[lower.tri(noNAmat)])
 
 # fitting confirmatory network model with psychonetrics
 # since exploratory model used spearman, should use spearman in confirmatory model for consistency (supply covs and nobs arguments instead of data)
+# computationally intensive; code below was saved to a .rds file, to be loaded with readRDS 
 cfmnetwork <- ggm(covs = cor(networkdata_us, use = "pairwise.complete.obs", method = "spearman"),
                   nobs = n_pairwise,
                   omega = adjmatrix)
-results_cfmnetwork <- cfmnetwork %>% runmodel() #takes a long time!
+#results_cfmnetwork <- cfmnetwork %>% runmodel()
+#saveRDS(results_cfmnetwork, file = "../data/confirmatory/rds/results_cfmnetwork.rds")
+results_cfmnetwork <- readRDS(file = "./data/confirmatory/rds/results_cfmnetwork.rds")
 
 # obtaining model fit indices
 results_cfmnetwork %>% fit %>% 

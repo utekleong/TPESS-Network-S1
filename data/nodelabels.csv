@@ -1,42 +1,42 @@
-"variablename","label","variable_description_short"
-"gad1","A1","Anxious feelings"
-"gad2","A2","Control of anxiety"
-"gad3","A3","Multiple anxiety foci"
-"gad4","A4","Difficulty relaxing"
-"gad5","A5","Restlessness"
-"gad6","A6","Irritability"
-"gad7","A7","Anxious anticipation"
-"phq1","D1","Anhedonia"
-"phq2","D2","Depressed"
-"phq3","D3","Sleep"
-"phq4","D4","Fatigue"
-"phq5","D5","Appetite"
-"phq6","D6","Failure"
-"phq7","D7","Concentration"
-"phq8","D8","Psychomotor"
-"phq9","D9","Suicidality"
-"smpd1","P1","Panic attacks"
-"smpd2","P2","Anxiety about panic attacks"
-"smpd3","P3","Thoughts about negative consequences"
-"smpd4","P4","Physiological reactions"
-"smpd5","P5","Restlessness and trouble sleeping"
-"smpd6","P6","Situational avoidance"
-"smpd7","P7","Disengagement"
-"smpd8","P8","Overpreparation or procrastination"
-"smpd9","P9","Distraction to avoid thoughts about panic attacks"
-"smpd10","P10","Needing help to cope with panic attacks"
-"smsp1","S1","Fear of social situations"
-"smsp2","S2","Anxiety about social situations"
-"smsp3","S3","Thoughts of rejection, embarrassment, or offending others"
-"smsp4","S4","Physiological reactions to social situations"
-"smsp5","S5","Restlessness in social situations"
-"smsp6","S6","Physical avoidance of social situations"
-"smsp7","S7","Disengagement in social situations"
-"smsp8","S8","Overpreparation for social situations"
-"smsp9","S9","Thought avoidance of social situations"
-"smsp10","S10","Needing help to cope with social situations"
-"docs_con","O1","Contamination subscale"
-"docs_res","O2","Responsibility subscale"
-"docs_ut","O3","Unacceptable Thoughts subscale"
-"docs_sym","O4","Symmetry subscale"
-"tpess","T1","TPESS mean score"
+variablename,label,variable_description_short
+gad1,A1,Anxious feelings
+gad2,A2,Control of anxiety
+gad3,A3,Multiple anxiety foci
+gad4,A4,Difficulty relaxing
+gad5,A5,Restlessness
+gad6,A6,Irritability
+gad7,A7,Anxious anticipation
+phq1,D1,Anhedonia
+phq2,D2,Depressed
+phq3,D3,Sleep
+phq4,D4,Fatigue
+phq5,D5,Appetite
+phq6,D6,Failure
+phq7,D7,Concentration
+phq8,D8,Psychomotor
+phq9,D9,Suicidality
+smpd1,P1,Panic attacks
+smpd2,P2,Anxiety about panic attacks
+smpd3,P3,Thoughts about negative consequences
+smpd4,P4,Physiological reactions
+smpd5,P5,Restlessness and trouble sleeping
+smpd6,P6,Situational avoidance
+smpd7,P7,Disengagement
+smpd8,P8,Overpreparation or procrastination
+smpd9,P9,Distraction to avoid thoughts about panic attacks
+smpd10,P10,Needing help to cope with panic attacks
+smsp1,S1,Fear of social situations
+smsp2,S2,Anxiety about social situations
+smsp3,S3,"Thoughts of rejection, embarrassment, or offending others"
+smsp4,S4,Physiological reactions to social situations
+smsp5,S5,Restlessness in social situations
+smsp6,S6,Physical avoidance of social situations
+smsp7,S7,Disengagement in social situations
+smsp8,S8,Overpreparation for social situations
+smsp9,S9,Thought avoidance of social situations
+smsp10,S10,Needing help to cope with social situations
+docs_con,O1,Contamination subscale
+docs_res,O2,Responsibility subscale
+docs_ut,O3,Unacceptable Thoughts subscale
+docs_sym,O4,Symmetry subscale
+tpess,T,TPESS mean score
