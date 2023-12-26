@@ -200,10 +200,7 @@ ggplot(smsad, aes(x = response, y = variable_description_short)) +
 
 ```{r}
 # generating non-parametric bootstraps samples of network_sg
-# computationally intensive; code below was saved to a .rds file, to be loaded with readRDS 
-
-#nonparboot <- bootnet(network_sg, nBoots = 1000, nCores = 8)
-#saveRDS(nonparboot, file = "..data/exploratory/rds/nonparboot.rds")
+# bootstraps of network_sg (see analysis_expnet.R) computationally intensive to execute so output was saved to a .rds file. Data to be loaded with readRDS 
 nonparboot <- readRDS(file = "../data/exploratory/rds/nonparboot.rds")
 ```
 

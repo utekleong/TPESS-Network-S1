@@ -129,21 +129,52 @@ row.names(edgeweight_full) <- nodelabels$label
 names(edgeweight_full) <- nodelabels$label
 #write.csv(edgeweight_full, file = "edgeweight.csv")
 
-# Edge Weight Table (TPESS-Symptoms only)
+# extracting edge weights (TPESS-Symptoms only)
 edgeweight_tpess <- data.frame(network_sg$graph[,41]) %>%
   round(digits = 2) %>% 
   rownames_to_column()
 names(edgeweight_tpess) <- c("variablename", "weight")
 edgeweight_tpess <- left_join(edgeweight_tpess, nodelabels, by = "variablename") %>% 
   select(label, variable_description_short, weight) %>% 
-  filter(label == "D6"|label == "D7"|label == "D9"|label == "A7"|label == "S3"|label == "O3") %>% 
-  arrange(desc(weight))
+  filter(label == "D6"|label == "D7"|label == "D9"|label == "A7"|label == "S3"|label == "O3") 
 
-edgeweight_tpess_table <- edgeweight_tpess %>% 
+#performing bootstrapping
+# computationally intensive; code below was saved to a .rds file, to be loaded with readRDS
+
+#nonparboot <- bootnet(network_sg, nBoots = 1000, nCores = 8)
+#saveRDS(nonparboot, file = "./data/exploratory/rds/nonparboot.rds")
+nonparboot <- readRDS(file = "./data/exploratory/rds/nonparboot.rds")
+
+# extracting bootstrapped CIs
+nonparboot_ci <- summary(nonparboot) %>%
+  filter(type == "edge", node2 == "T", (node1 == "D6"|node1 == "D7"|node1 == "D9"|node1 == "A7"|node1 == "S3"|node1 == "O3")) %>% 
+  ungroup() %>% 
+  select(node1, CIlower, CIupper)
+nonparboot_ci$CIlower <- round(nonparboot_ci$CIlower, digits = 2)
+nonparboot_ci$CIupper <- round(nonparboot_ci$CIupper, digits = 2)
+nonparboot_ci <- mutate(nonparboot_ci, CI = paste0("[",CIlower,",",CIupper,"]"), .keep = "unused")
+names(nonparboot_ci) <- c("label", "CI")
+
+# extracting inclusion proportions
+nonparboot_ip <- bootInclude(nonparboot)
+nonparboot_ip<- nonparboot_ip$graph %>% data.frame() %>% 
+  select(tpess) %>% 
+  rownames_to_column()
+names(nonparboot_ip) <- c("variablename", "ip")
+nonparboot_ip <- left_join(nonparboot_ip, nodelabels, by = "variablename") %>% 
+  select(label, ip) %>% 
+  filter(label == "D6"|label == "D7"|label == "D9"|label == "A7"|label == "S3"|label == "O3") 
+
+# edge weights (TPESS-Symptoms only)) + bootstrapped CI + inclusion proportion
+edgeweight_tpess_table <- left_join(edgeweight_tpess, nonparboot_ci, by = "label") %>% 
+  left_join(nonparboot_ip, by = "label") %>% 
+  arrange(desc(weight)) %>% 
   flextable() %>% 
   set_header_labels(label = "Node Label",
                     variable_description_short = "Description",
-                    weight = "Edge Weight") %>% 
+                    weight = "Edge Weight",
+                    CI = "Bootstrapped CI",
+                    ip = "Inclusion Proportion") %>% 
   autofit()
 #print(edgeweight_tpess_table, preview = "docx")
 

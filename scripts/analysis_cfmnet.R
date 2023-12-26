@@ -79,7 +79,7 @@ cfmnetwork <- ggm(covs = cor(networkdata_us, use = "pairwise.complete.obs", meth
                   nobs = n_pairwise,
                   omega = adjmatrix)
 #results_cfmnetwork <- cfmnetwork %>% runmodel()
-#saveRDS(results_cfmnetwork, file = "../data/confirmatory/rds/results_cfmnetwork.rds")
+#saveRDS(results_cfmnetwork, file = "./data/confirmatory/rds/results_cfmnetwork.rds")
 results_cfmnetwork <- readRDS(file = "./data/confirmatory/rds/results_cfmnetwork.rds")
 
 # obtaining model fit indices
