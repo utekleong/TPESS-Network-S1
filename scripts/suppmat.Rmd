@@ -1,5 +1,6 @@
 ---
-title: "Supplementary Material"
+title: "Associations Between a Transdiagnostic Core Vulnerability and Internalizing Symptoms: A Network Analysis"
+subtitle: "Supplementary Material"
 output:
   pdf_document:
     number_sections: true
@@ -42,6 +43,7 @@ networkdata_allitems_sg <- read.csv("../data/exploratory/networkdata_allitems_sg
 ```
 
 ## Estimated network
+Please see table in next section for a description of each node label.
 
 ```{r}
 # defining node labels for graph
@@ -93,7 +95,7 @@ plot_57 <- plot(network_57,
 
 \newpage
 
-## Item content
+## Summary of nodes included in the 57-node network
 
 ```{r}
 data.frame(variablename = colnames(networkdata_allitems_sg)) %>% 
@@ -196,7 +198,8 @@ ggplot(smsad, aes(x = response, y = variable_description_short)) +
 
 \newpage
 
-# Appendix 3: Robustness Analysis (Bootstrapped CIs for Edge Weights)
+# Appendix 3: Robustness Analysis
+Axis labels have been removed to avoid clutter.
 
 ```{r}
 # generating non-parametric bootstraps samples of network_sg
@@ -266,7 +269,7 @@ docs_sym_reli <- networkdata_reliability_us %>%
   psych::alpha()
 ```
 
-The same measures administered to the Singaporean student sample were administered to the US community sample. The internal consistency of the TPESS , DOCS contamination subscale, DOCS responsibility subscale, DOCS unacceptable thoughts subscale, and DOCS symmetry subscale in the US sample was $\alpha$ = `r round(docs_tpess_reli$total$raw_alpha, digits = 2)`, $\alpha$ = `r round(docs_con_reli$total$raw_alpha, digits = 2)`, $\alpha$ = `r round(docs_res_reli$total$raw_alpha, digits = 2)`, $\alpha$ = `r round(docs_ut_reli$total$raw_alpha, digits = 2)`, and $\alpha$ = `r round(docs_sym_reli$total$raw_alpha, digits = 2)` respectively.
+The same measures administered to the Singaporean student sample were administered to the US community sample. The internal consistency of the TPESS, DOCS contamination subscale, DOCS responsibility subscale, DOCS unacceptable thoughts subscale, and DOCS symmetry subscale in the US sample was $\alpha$ = `r round(docs_tpess_reli$total$raw_alpha, digits = 2)`, $\alpha$ = `r round(docs_con_reli$total$raw_alpha, digits = 2)`, $\alpha$ = `r round(docs_res_reli$total$raw_alpha, digits = 2)`, $\alpha$ = `r round(docs_ut_reli$total$raw_alpha, digits = 2)`, and $\alpha$ = `r round(docs_sym_reli$total$raw_alpha, digits = 2)` respectively.
 
 ### Data Analysis
 
@@ -344,7 +347,9 @@ plot_us <- qgraph(getmatrix(results_cfmnetwork, "omega", threshold = TRUE, alpha
 ```
 
 The figure above depicts the confirmatory network model fit to data from the US community
-sample. The confirmatory model -- $\chi^{2}$(`r (fit_cfmnetwork %>% filter(Measure == "df"))$Value`) = `r (fit_cfmnetwork %>% filter(Measure == "chisq"))$Value`, *p* < .001; RMSEA = `r (fit_cfmnetwork %>% filter(Measure == "rmsea"))$Value`; TLI = `r (fit_cfmnetwork %>% filter(Measure == "tli"))$Value`; CFI = `r (fit_cfmnetwork %>% filter(Measure == "cfi"))$Value` -- fit the data excellently. This indicates that the general network structure of associations between the core vulnerability and internalizing symptoms extracted from the Singaporean student sample in our exploratory analysis was replicated in the US community sample. Simulations (see next section) suggest that the US community sample was sufficiently large for this replication and that the significant negative edges in the confirmatory model were expected given that the network structure (that was imposed on the US community sample data) was extracted from an exploratory model estimated using graphical LASSO estimation. The symptoms with statistically significant edges with the core vulnerability are presented in the table below.
+sample. The confirmatory model -- $\chi^{2}$(`r (fit_cfmnetwork %>% filter(Measure == "df"))$Value`) = `r (fit_cfmnetwork %>% filter(Measure == "chisq"))$Value`, *p* < .001; RMSEA = `r (fit_cfmnetwork %>% filter(Measure == "rmsea"))$Value`; TLI = `r (fit_cfmnetwork %>% filter(Measure == "tli"))$Value`; CFI = `r (fit_cfmnetwork %>% filter(Measure == "cfi"))$Value` -- fit the data excellently. This indicates that the general network structure of associations between the core vulnerability and internalizing symptoms extracted from the Singaporean student sample in our exploratory analysis was replicated in the US community sample. The symptoms with statistically significant edges with the core vulnerability are presented in the table below. 
+
+The edges between the core vulnerability and three cognition-related symptom nodes -- feeling like a failure, thoughts of rejection, embarrassment, or offending others, and the unacceptable thoughts subscale -- were prominent in the exploratory network and statistically significant in the confirmatory network. As the fit of the confirmatory model is excellent, we may conclude that these edges replicated across our datasets.
 
 ```{r, fig.show = 'hide'}
 # extracing significance values from CIplot
@@ -390,7 +395,3 @@ cfmnetwork_edgelist_sig %>%
     threeparttable = TRUE,
     footnote_as_chunk = TRUE)
 ```
-
-## Simulations
-
-To discuss with Sacha.

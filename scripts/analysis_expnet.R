@@ -60,6 +60,10 @@ networkdata_reliability_sg %>%
 mean(data_sg$Age, na.rm = TRUE) %>% 
   round(digits = 2)
 
+# SD of age
+sd(data_sg$Age, na.rm = TRUE) %>% 
+  round(digits = 2)
+
 ##################################################################
 ##                Exploratory network estimation                ##
 ##################################################################
@@ -138,9 +142,8 @@ edgeweight_tpess <- left_join(edgeweight_tpess, nodelabels, by = "variablename")
   select(label, variable_description_short, weight) %>% 
   filter(label == "D6"|label == "D7"|label == "D9"|label == "A7"|label == "S3"|label == "O3") 
 
-#performing bootstrapping
+#performing non-parametric bootstrapping
 # computationally intensive; code below was saved to a .rds file, to be loaded with readRDS
-
 #nonparboot <- bootnet(network_sg, nBoots = 1000, nCores = 8)
 #saveRDS(nonparboot, file = "./data/exploratory/rds/nonparboot.rds")
 nonparboot <- readRDS(file = "./data/exploratory/rds/nonparboot.rds")
@@ -153,7 +156,7 @@ nonparboot_ci <- summary(nonparboot) %>%
 nonparboot_ci$CIlower <- round(nonparboot_ci$CIlower, digits = 2)
 nonparboot_ci$CIupper <- round(nonparboot_ci$CIupper, digits = 2)
 nonparboot_ci <- mutate(nonparboot_ci, CI = paste0("[",CIlower,",",CIupper,"]"), .keep = "unused")
-names(nonparboot_ci) <- c("label", "CI")
+names(nonparboot_ci) <- c("label", "BCI")
 
 # extracting inclusion proportions
 nonparboot_ip <- bootInclude(nonparboot)
@@ -165,16 +168,35 @@ nonparboot_ip <- left_join(nonparboot_ip, nodelabels, by = "variablename") %>%
   select(label, ip) %>% 
   filter(label == "D6"|label == "D7"|label == "D9"|label == "A7"|label == "S3"|label == "O3") 
 
+# edge weight differences
+difference_edgelist <- c("A7--T","D7--T","D9--T","O3--T", "S3--T")
+difference_df <- data.frame()
+for (i in difference_edgelist) {
+  difference_edge <- differenceTest(nonparboot, "D6--T", i, measure = "edge")
+  difference_df <- rbind(difference_df, difference_edge)
+}
+
+difference_df <- cbind(label = c("A7", "D7", "D9", "O3", "S3"), difference_df)
+
+difference_df <- select(difference_df, label, lower, upper)
+difference_df$lower <- round(difference_df$lower, digits = 2)
+difference_df$upper <- round(difference_df$upper, digits = 2)
+difference_df <- mutate(difference_df, CI = paste0("[",lower,",",upper,"]"), .keep = "unused")
+difference_df <- rbind(c("D6","-"), difference_df)
+names(difference_df) <- c("label", "diff_CI")
+
+
 # edge weights (TPESS-Symptoms only)) + bootstrapped CI + inclusion proportion
 edgeweight_tpess_table <- left_join(edgeweight_tpess, nonparboot_ci, by = "label") %>% 
-  left_join(nonparboot_ip, by = "label") %>% 
+  left_join(nonparboot_ip, by = "label") %>%
+  left_join(difference_df, by = "label") %>% 
   arrange(desc(weight)) %>% 
   flextable() %>% 
   set_header_labels(label = "Node Label",
                     variable_description_short = "Description",
                     weight = "Edge Weight",
-                    CI = "Bootstrapped CI",
-                    ip = "Inclusion Proportion") %>% 
+                    BCI = "Bootstrapped CI",
+                    ip = "Inclusion Proportion",
+                    diff_CI = "Bootstrapped Difference Test CI") %>% 
   autofit()
 #print(edgeweight_tpess_table, preview = "docx")
-
