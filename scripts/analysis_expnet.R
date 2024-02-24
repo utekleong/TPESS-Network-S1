@@ -113,7 +113,7 @@ plot_sg <- plot(network_sg,
      border.width = 0.75,
      legend.cex = 0.95,
      nodeNames = nodelabels$variable_description_short,
-     filename = "expnetwork", filetype = "jpeg", width = 20, height = 20)
+     filename = "expnetwork", filetype = "png", width = 20, height = 20)
 
 # extracting adjacency matrix from the exploratory network to be used in confirmatory network analysis
 adjmatrix <- 1*(network_sg$graph !=0)
@@ -122,6 +122,18 @@ adjmatrix <- 1*(network_sg$graph !=0)
 # extracting plot layout from the exploratory network to be used in confirmatory network analysis
 plotlayout <- plot_sg$layout
 # write.csv(plotlayout, file = "./data/confirmatory/plotlayout.csv", row.names = FALSE)
+
+#################################################################
+##                 Sympptom descriptives table                 ##
+#################################################################
+# Symptom descriptive table
+sympdesc <- nodelabels
+
+
+
+
+
+
 
 ##################################################################
 ##                      Edge weight tables                      ##

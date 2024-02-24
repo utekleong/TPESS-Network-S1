@@ -119,7 +119,6 @@ data.frame(variablename = colnames(networkdata_allitems_sg)) %>%
 \newpage
 
 # Appendix 2: Distribution of responses to PHQ-9, GAD-7, SMPD, and SMSAD items
-
 The size of the circles in each plot reflects the proportion of the sample that selected the corresponding item response.
 
 <!-- # importing data-->
@@ -236,7 +235,7 @@ variables <- as.data.frame(readxl::read_xlsx("../data/variablebook.xlsx")) %>%
 
 ### Participants and Procedure
 
-We used data gathered from a US community sample via Prolific (*n* = 595). After removing duplicate responses and data from participants who had failed attention checks, the final sample size used for the present analysis was 534. Of the 534 participants, 293 participants were male, 236 were female, and 5 preferred not to indicate their gender. Most participants were ethnically Caucasian (69.7%) -- the remaining participants were either African American (15.0%), Hispanic (3.4%), Asian (8.2%), or others/mixed (3.7%). The mean age of this sample was `r mean(data_us$Age, na.rm = TRUE) %>% round(digits = 2)`. Participants were tasked to complete a battery of self-report questionnaires online at their convenience and were reimbursed with cash for their participation.
+We used data gathered from a US community sample via Prolific (*n* = 595). After removing duplicate responses and data from participants who had failed attention checks, the final sample size used for the present analysis was 534. Of the 534 participants, 293 participants were male, 236 were female, and 5 preferred not to indicate their gender. Most participants were ethnically Caucasian (69.7%) -- the remaining participants were either African American (15.0%), Hispanic (3.4%), Asian (8.2%), or others/mixed (3.7%). The mean age of this sample was `r mean(data_us$Age, na.rm = TRUE) %>% round(digits = 2)` (*SD* = `r sd(data_us$Age, na.rm = TRUE) %>% round(digits =2)`). Participants were tasked to complete a battery of self-report questionnaires online at their convenience and were reimbursed with cash for their participation.
 
 ### Measures
 
