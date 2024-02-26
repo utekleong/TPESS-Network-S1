@@ -111,7 +111,7 @@ data.frame(variablename = colnames(networkdata_allitems_sg)) %>%
   column_spec(2, width = "30em") %>% 
   footnote(
     general_title = "Note.",
-    general = "GAD-7 = Generalized Anxiety Disorder-7; PHQ-9 = Patient Health Questionnaire-9; SMPD = Severity Measure for Panic Disorder-Adult; SMSAD = Severity Measure for Social Anxiety Disorder-Adult; DOCS = Dimensional Obsessive-Compulsive Scale; TPESS = Transdiagnostic Processes of Emotional Symptoms Scale; Item labels for PHQ-9, GAD-7, and DOCS adapted from Hsu et al. (2022), Mossman et al. (2017), and Abramowitz et al. (2010) respectively.",
+    general = "GAD-7 = Generalized Anxiety Disorder-7; PHQ-9 = Patient Health Questionnaire-9; SMPD = Severity Measure for Panic Disorder-Adult; SMSAD = Severity Measure for Social Anxiety Disorder-Adult; DOCS = Dimensional Obsessive-Compulsive Scale; TPESS = Transdiagnostic Processes of Emotional Symptoms Scale; Item descriptions for PHQ-9, GAD-7, and DOCS adapted from Hsu et al. (2022), Mossman et al. (2017), and Abramowitz et al. (2010) respectively.",
     threeparttable = TRUE,
     footnote_as_chunk = TRUE)
 ```
@@ -197,8 +197,9 @@ ggplot(smsad, aes(x = response, y = variable_description_short)) +
 
 \newpage
 
-# Appendix 3: Robustness Analysis
-Axis labels have been removed to avoid clutter.
+# Appendix 3: Robustness Analysis (Bootstrapped Confidence Intervals of Edge Weights)
+
+Each horizontal line represents an edge in the network; lines were ordered in descending order (highest edge weight to lowest edge weight). Red dots indicate sample values and the grey areas indicate bootstrapped confidence intervals. Axis labels have been removed to avoid clutter. 
 
 ```{r}
 # generating non-parametric bootstraps samples of network_sg
@@ -206,10 +207,11 @@ Axis labels have been removed to avoid clutter.
 nonparboot <- readRDS(file = "../data/exploratory/rds/nonparboot.rds")
 ```
 
-```{r, fig.dim = c(8, 10)}
+```{r, fig.dim = c(7, 7)}
 #plotting bootstrapped CIs for edge weights
 plot(nonparboot, order = "sample", labels = FALSE, areaAlpha = 0.4)
 ```
+
 
 \newpage
 

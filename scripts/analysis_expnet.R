@@ -127,13 +127,23 @@ plotlayout <- plot_sg$layout
 ##                 Sympptom descriptives table                 ##
 #################################################################
 # Symptom descriptive table
-sympdesc <- nodelabels
+sympdesc <- data.frame(psych::describe(data_sg, skew = FALSE, ranges = FALSE, na.rm = TRUE)) %>% 
+  rownames_to_column(var = "variablename") %>% 
+  select(-vars, -se, -n) %>% 
+  filter(variablename != "Age")
+sympdesc[,c("mean", "sd")] <- round(sympdesc[,c("mean","sd")], digits =2)
 
+sympdesc_table <- nodelabels %>%
+  left_join(sympdesc, by = "variablename") %>%
+  select(-variablename) %>%
+  flextable() %>% 
+  set_header_labels(label = "Node label",
+                    variable_description_short = "Description",
+                    mean = "Mean",
+                    sd = "SD") %>%
+  autofit()
 
-
-
-
-
+#print(sympdesc_table, preview = "docx")
 
 ##################################################################
 ##                      Edge weight tables                      ##
@@ -204,11 +214,11 @@ edgeweight_tpess_table <- left_join(edgeweight_tpess, nonparboot_ci, by = "label
   left_join(difference_df, by = "label") %>% 
   arrange(desc(weight)) %>% 
   flextable() %>% 
-  set_header_labels(label = "Node Label",
+  set_header_labels(label = "Node label",
                     variable_description_short = "Description",
-                    weight = "Edge Weight",
+                    weight = "Edge weight",
                     BCI = "Bootstrapped CI",
-                    ip = "Inclusion Proportion",
-                    diff_CI = "Bootstrapped Difference Test CI") %>% 
+                    ip = "Inclusion proportion",
+                    diff_CI = "Bootstrapped difference test CI") %>% 
   autofit()
 #print(edgeweight_tpess_table, preview = "docx")
