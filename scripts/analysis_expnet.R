@@ -123,6 +123,10 @@ adjmatrix <- 1*(network_sg$graph !=0)
 plotlayout <- plot_sg$layout
 # write.csv(plotlayout, file = "./data/confirmatory/plotlayout.csv", row.names = FALSE)
 
+#extracting weights matrx from the exploratory network to be used in the factor score network
+weightmatrix <- network_sg$graph
+# write.csv(weightmatrix, file = "./data/fsnetwork/weightmatrix.csv", row.names = FALSE)
+
 #################################################################
 ##                 Sympptom descriptives table                 ##
 #################################################################

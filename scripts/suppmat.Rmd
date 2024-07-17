@@ -22,7 +22,7 @@ library(haven)
 library(psych)
 library(qgraph)
 library(psychonetrics)
-
+library(lavaan)
 ```
 
 <!-- # loading data labels -->
@@ -396,3 +396,141 @@ cfmnetwork_edgelist_sig %>%
     threeparttable = TRUE,
     footnote_as_chunk = TRUE)
 ```
+
+\newpage
+
+# Appendix 5: Factor Score Network
+A reviewer suggested that we consider a factor score approach: using the factor scores of the core vulnerability and the four DOCS subscales instead of their sum scores to estimate the network we reported in the main manuscript. We report this network here for the interested reader. As detailed below, we decided to retain our use of sum scores for the core vulnerability and the DOCS subscales in our network analysis because the factor score yielded an almost identical network.
+
+The layout of the factor score network was constrained to that of the network reported in the main manuscript (i.e. the original network) for ease of comparison. Factor scores (for both the core vulnerability and the DOCS subscales) were computed using the regression method. Said factor scores were highly correlated with the sum scores (~.98 to .99). The *only* difference between this factor score network and the original network is that factor scores for the core vulnerability and the four DOCS subscales were used instead of their sum scores during network estimation.
+
+```{r, results = 'hide'}
+# importing factor scores
+tpess_factorscores <- read_sav("../data/fsnetwork/fscores.sav") %>% 
+  select(1)
+names(tpess_factorscores) <- "tpess_fs"
+
+# importing clean data for network estimation
+networkdata_sg_fs <- read.csv("../data/exploratory/networkdata_allitems_sg.csv")
+
+# importing codebook
+variables <- as.data.frame(readxl::read_xlsx("../data/variablebook.xlsx")) %>% 
+  select("label", "variablename", "variable_description_short", "variable_description_clean")
+
+##################################################################
+##          Computing factor scores for DOCS subscales          ##
+##################################################################
+# subsetting DOCS data
+docs_data <- networkdata_sg_fs %>% 
+  select(starts_with("docs"))
+
+# specifying and estimating CFA model
+docs_structure <-"
+docs_con =~ docs1 + docs2 + docs3 + docs4 + docs5
+docs_res =~ docs6 + docs7 + docs8 + docs9 + docs10
+docs_ut =~ docs11 + docs12 + docs13 + docs14 + docs15
+docs_sym =~ docs16 + docs17 + docs18 + docs19 + docs20
+
+# Second-order factor
+docs_general =~ docs_con + docs_res + docs_ut + docs_sym
+"
+docs_model <- cfa(docs_structure, docs_data, missing = "ml")
+summary(docs_model, fit.measures = TRUE)
+
+# extracting factor scores
+docs_factorscores <- as.data.frame(lavPredict(docs_model, method = "regression")) %>% 
+  select(-docs_general)
+```
+
+```{r, results = 'hide'}
+##################################################################
+##                Exploratory network estimation                ##
+##################################################################
+# merging factor scores with rest of the data
+networkdata_sg_fs <- networkdata_sg_fs %>% 
+  select(-tpess, -starts_with("docs")) %>% 
+  cbind(docs_factorscores) %>% 
+  cbind(tpess_factorscores)
+
+# defining node labels for graph
+nodelabels <- data.frame(variablename = colnames(networkdata_sg_fs)) %>% 
+  left_join(variables, by = "variablename") %>% 
+  select(-variable_description_clean)
+nodelabels[nodelabels$variablename == "tpess_fs",2] <- "T"
+nodelabels[nodelabels$variablename == "tpess_fs",3] <- "TPESS factor score"
+nodelabels[nodelabels$variablename == "docs_con",3] <- "Contamination factor score"
+nodelabels[nodelabels$variablename == "docs_res",3] <- "Responsibility factor score"
+nodelabels[nodelabels$variablename == "docs_ut",3] <- "Unacceptable Thoughts factor score"
+nodelabels[nodelabels$variablename == "docs_sym",3] <- "Symmetry factor score"
+
+# estimating network
+network_fs <- estimateNetwork(networkdata_sg_fs,
+                              default = "EBICglasso",
+                              corMethod = "spearman",
+                              labels = nodelabels$label,
+                              missing = "pairwise",
+                              sampleSize = "pairwise_average",
+                              tuning = 0.5)
+
+# custom function for defining legend vectors
+# DO NOT use if there is only one element
+# var_start argument should be argument for dplyr::starts_with
+def_legend <- function(data, var_start){
+  
+  data %>% 
+    select(starts_with(var_start)) %>% 
+    colnames() %>%  
+    match(colnames(data))
+}
+
+# defining grouping for legend
+group_subscale <- list("GAD" = def_legend(networkdata_sg_fs,"gad"),
+                       "PHQ-9" = def_legend(networkdata_sg_fs,"phq"),
+                       "SMPD" = def_legend(networkdata_sg_fs,"smpd"),
+                       "SMSAD" = def_legend(networkdata_sg_fs,"smsp"),
+                       "DOCS" = def_legend(networkdata_sg_fs,"docs"),
+                       "TPESS" = c(which(colnames(networkdata_sg_fs) == "tpess_fs")))
+
+# importing plot layout from original exploratory network for ease of comparison
+plotlayout <- as.matrix(read.csv("../data/confirmatory/plotlayout.csv"))
+```
+
+```{r, fig.height = 30, fig.width = 1.4*30}
+# printing plot
+plot_fs <- plot(network_fs,
+                groups = group_subscale,
+                layout = plotlayout, #layout constrained to that of original exploratory network for ease of comparison
+                cut = 0,
+                palette = "pastel",
+                vsize = 3,
+                labels = nodelabels$label,
+                label.cex = 1.5,
+                border.width = 0.75,
+                legend.cex = 1.42,
+                nodeNames = nodelabels$variable_description_short)
+
+```
+
+\newpage
+
+```{r}
+# weight matrices
+weightmatrix_main <- as.matrix(read.csv("../data/fsnetwork/weightmatrix.csv"))
+weightmatrix_factorscore <- network_fs$graph
+
+#edge weights
+edgeweight_main <- weightmatrix_main[lower.tri(weightmatrix_main)]
+edgeweight_factorscore <- weightmatrix_factorscore[lower.tri(weightmatrix_factorscore)]
+
+cor_edgeweight <- cor(edgeweight_main, edgeweight_factorscore)
+```
+
+To assess how similar this factor score network is to the original network, we computed the correlation between the edge weights of the factor score network and that of the original network.
+
+The edge weights of the factor score network was highly correlated (*r* = `r round(cor_edgeweight, digits = 2)`) with that of the "main" network, indicating that both networks were highly similar. For this reason, we decided to retain our use of sum scores for the core vulnerability and the DOCS subscales in our network analysis.
+
+```{r}
+plot(edgeweight_main, edgeweight_factorscore, ylab = "Edge Weights (Factor Score Network)", xlab = "Edge Weights (Original Network)")
+```
+
+
