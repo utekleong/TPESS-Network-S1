@@ -402,7 +402,7 @@ cfmnetwork_edgelist_sig %>%
 # Appendix 5: Factor Score Network
 A reviewer suggested that we consider a factor score approach: using the factor scores of the core vulnerability and the four DOCS subscales instead of their sum scores to estimate the network we reported in the main manuscript. We report this network here for the interested reader. As detailed below, we decided to retain our use of sum scores for the core vulnerability and the DOCS subscales in our network analysis because the factor score yielded an almost identical network.
 
-The layout of the factor score network was constrained to that of the network reported in the main manuscript (i.e. the original network) for ease of comparison. Factor scores (for both the core vulnerability and the DOCS subscales) were computed using the regression method. Said factor scores were highly correlated with the sum scores (~.98 to .99). The *only* difference between this factor score network and the original network is that factor scores for the core vulnerability and the four DOCS subscales were used instead of their sum scores during network estimation.
+The layout of the factor score network was constrained to that of the network reported in the main manuscript (i.e. the original network) for ease of comparison. Factor scores (for both the core vulnerability and the DOCS subscales) were computed using the regression method. Said factor scores were highly correlated with the sum scores (~.98 to .99).
 
 ```{r, results = 'hide'}
 # importing factor scores
@@ -527,7 +527,7 @@ cor_edgeweight <- cor(edgeweight_main, edgeweight_factorscore)
 
 To assess how similar this factor score network is to the original network, we computed the correlation between the edge weights of the factor score network and that of the original network.
 
-The edge weights of the factor score network was highly correlated (*r* = `r round(cor_edgeweight, digits = 2)`) with that of the "main" network, indicating that both networks were highly similar. For this reason, we decided to retain our use of sum scores for the core vulnerability and the DOCS subscales in our network analysis.
+The edge weights of the factor score network was highly correlated (*r* = `r round(cor_edgeweight, digits = 3)`) with that of the "main" network, indicating that both networks were highly similar. For this reason, we decided to retain our use of sum scores for the core vulnerability and the DOCS subscales in our network analysis.
 
 ```{r}
 plot(edgeweight_main, edgeweight_factorscore, ylab = "Edge Weights (Factor Score Network)", xlab = "Edge Weights (Original Network)")
