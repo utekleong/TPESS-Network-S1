@@ -123,9 +123,16 @@ adjmatrix <- 1*(network_sg$graph !=0)
 plotlayout <- plot_sg$layout
 # write.csv(plotlayout, file = "./data/confirmatory/plotlayout.csv", row.names = FALSE)
 
-#extracting weights matrx from the exploratory network to be used in the factor score network
+#extracting weights matrix from the exploratory network to be used in the factor score network
 weightmatrix <- network_sg$graph
 # write.csv(weightmatrix, file = "./data/fsnetwork/weightmatrix.csv", row.names = FALSE)
+
+#saving plot object for appendix
+#saveRDS(plot_sg, file = "./data/appendix/rds/plot_sg.rds")
+
+#saving bootnet object for appendix
+#saveRDS(network_sg, file = "./data/appendix/rds/boot_sg.rds")
+
 
 #################################################################
 ##                 Sympptom descriptives table                 ##

@@ -23,6 +23,7 @@ library(psych)
 library(qgraph)
 library(psychonetrics)
 library(lavaan)
+library(networktools)
 ```
 
 <!-- # loading data labels -->
@@ -211,11 +212,60 @@ nonparboot <- readRDS(file = "../data/exploratory/rds/nonparboot.rds")
 #plotting bootstrapped CIs for edge weights
 plot(nonparboot, order = "sample", labels = FALSE, areaAlpha = 0.4)
 ```
+\newpage
 
+# Appendix 4: Bridge Strength
+In response to a reviewer's insightful comment, we felt that it was necessary to statistically evaluate the degree to which the core vulnerability exhibits the properties of a general psychological vulnerability by examining the bridge strength – a centrality measure that indicates a given node’s total connectivity with nodes from other communities (Jones et al., 2019). We report this analysis here for the interested reader.
+
+In the current context, there are six communities: (1) the core vulnerability, (2) depression symptoms, (3) generalized anxiety symptoms, (4) symptoms of panic disorder, (5) symptoms of social anxiety disorder, and (6) the subscales of OCD. If the core vulnerability has the properties of a general psychological vulnerability, it should possess the highest bridge strength among nodes within the network. That is, it should have the strongest connectivity to the symptoms from the five other communities in our network. If it does not and if a symptom were to have a higher bridge strength than the core vulnerability, then the notion that the core vulnerability is akin to a general psychological vulnerability will be challenged.
+
+```{r}
+# creating communities
+communities <- list("gad"= c(1:7),
+                    "phq9" = c(8:16),
+                    "smpd" = c(17:26),
+                    "smsp" = c(27:36),
+                    "docs" = c(37:40),
+                    "tpess" = c(41))
+```
+
+```{r, out.width = "300%"}
+#loading exploratory network plot data
+plot_sg <- readRDS("../data/appendix/rds/plot_sg.rds")
+
+#computing bridge centrality
+bridgecen_sg <- bridge(plot_sg,communities = communities)
+```
+
+The plot below depicts the bridge strength of each of the 41 nodes in our network. The TPESS mean score node (which represents the core vulnerability) clearly had the highest bridge strength of the nodes in the network. Importantly, the bridge strength of the core vulnerability node far surpassed the bridge strength of any symptom in the network, lending (tentative) credence to the notion that the core vulnerability (and not other specific symptoms within the network) possess the qualities of a general psychological vulnerability.
+
+```{r}
+plot_bridgecen_sg <- plot(bridgecen_sg, include = c("Bridge Strength")) + 
+  theme(axis.text=element_text(size = 6))
+
+print(plot_bridgecen_sg)
+```
+\newpage
+
+We also assessed the stability of the bridge strength centrality measure using case-drop bootstraps. As depicted in the plot below, the bridge strength centrality estimates were highly stable and accurate.
+
+```{r, results = 'hide'}
+# performing case-drop bootstraps for exploratory network
+boot_sg <- readRDS("../data/appendix/rds/boot_sg.rds")
+#casedropboot <- bootnet(boot_sg, nBoots = 1000, nCores = 8, statistics = "all", communities = communities, type = "case")
+#saveRDS(casedropboot, "../data/appendix/rds/casedropboot.rds")
+casedropboot <- readRDS("../data/appendix/rds/casedropboot.rds")
+
+# assessing stability of bridge strength using case-drop bootstrap statistics
+corStability(casedropboot, statistics = c("bridgeStrength"))
+```
+```{r}
+plot(casedropboot, statistics= c("bridgeStrength"))
+```
 
 \newpage
 
-# Appendix 4: Confirmatory Network Analysis for US community Sample
+# Appendix 5: Confirmatory Network Analysis for US community Sample
 
 ```{r}
 set.seed(2022)
@@ -399,7 +449,7 @@ cfmnetwork_edgelist_sig %>%
 
 \newpage
 
-# Appendix 5: Factor Score Network
+# Appendix 6: Factor Score Network
 A reviewer suggested that we consider a factor score approach: using the factor scores of the core vulnerability and the four DOCS subscales instead of their sum scores to estimate the network we reported in the main manuscript. We report this network here for the interested reader. As detailed below, we decided to retain our use of sum scores for the core vulnerability and the DOCS subscales in our network analysis because the factor score yielded an almost identical network.
 
 The layout of the factor score network was constrained to that of the network reported in the main manuscript (i.e. the original network) for ease of comparison. Factor scores (for both the core vulnerability and the DOCS subscales) were computed using the regression method. Said factor scores were highly correlated with the sum scores (~.98 to .99).
