@@ -456,7 +456,7 @@ The layout of the factor score network was constrained to that of the network re
 
 ```{r, results = 'hide'}
 # importing factor scores
-tpess_factorscores <- read_sav("../data/fsnetwork/fscores.sav") %>% 
+tpess_factorscores <- read_sav("../data/appendix/fsnetwork/fscores.sav") %>% 
   select(1)
 names(tpess_factorscores) <- "tpess_fs"
 
@@ -565,7 +565,7 @@ plot_fs <- plot(network_fs,
 
 ```{r}
 # weight matrices
-weightmatrix_main <- as.matrix(read.csv("../data/fsnetwork/weightmatrix.csv"))
+weightmatrix_main <- as.matrix(read.csv("../data/appendix/fsnetwork/weightmatrix.csv"))
 weightmatrix_factorscore <- network_fs$graph
 
 #edge weights

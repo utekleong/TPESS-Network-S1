@@ -125,7 +125,7 @@ plotlayout <- plot_sg$layout
 
 #extracting weights matrix from the exploratory network to be used in the factor score network
 weightmatrix <- network_sg$graph
-# write.csv(weightmatrix, file = "./data/fsnetwork/weightmatrix.csv", row.names = FALSE)
+# write.csv(weightmatrix, file = "./data/appendix/fsnetwork/weightmatrix.csv", row.names = FALSE)
 
 #saving plot object for appendix
 #saveRDS(plot_sg, file = "./data/appendix/rds/plot_sg.rds")
