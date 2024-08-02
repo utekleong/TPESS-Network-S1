@@ -73,7 +73,7 @@ def_legend <- function(data, var_start){
 }
 
 # defining grouping for legend
-group_subscale_57 <- list("GAD" = def_legend(networkdata_allitems_sg,"gad"),
+group_subscale_57 <- list("GAD-7" = def_legend(networkdata_allitems_sg,"gad"),
                        "PHQ-9" = def_legend(networkdata_allitems_sg,"phq"),
                        "SMPD" = def_legend(networkdata_allitems_sg,"smpd"),
                        "SMSAD" = def_legend(networkdata_allitems_sg,"smsp"),
@@ -366,7 +366,7 @@ def_legend <- function(data, var_start){
 }
 
 # defining grouping for legend
-group_subscale <- list("GAD" = def_legend(networkdata_us,"gad"),
+group_subscale <- list("GAD-7" = def_legend(networkdata_us,"gad"),
                        "PHQ-9" = def_legend(networkdata_us,"phq"),
                        "SMPD" = def_legend(networkdata_us,"smpd"),
                        "SMSAD" = def_legend(networkdata_us,"smsp"),
@@ -534,7 +534,7 @@ def_legend <- function(data, var_start){
 }
 
 # defining grouping for legend
-group_subscale <- list("GAD" = def_legend(networkdata_sg_fs,"gad"),
+group_subscale <- list("GAD-7" = def_legend(networkdata_sg_fs,"gad"),
                        "PHQ-9" = def_legend(networkdata_sg_fs,"phq"),
                        "SMPD" = def_legend(networkdata_sg_fs,"smpd"),
                        "SMSAD" = def_legend(networkdata_sg_fs,"smsp"),

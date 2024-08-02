@@ -94,7 +94,7 @@ def_legend <- function(data, var_start){
 }
 
 # defining grouping for legend
-group_subscale <- list("GAD" = def_legend(networkdata_sg,"gad"),
+group_subscale <- list("GAD-7" = def_legend(networkdata_sg,"gad"),
                        "PHQ-9" = def_legend(networkdata_sg,"phq"),
                        "SMPD" = def_legend(networkdata_sg,"smpd"),
                        "SMSAD" = def_legend(networkdata_sg,"smsp"),
